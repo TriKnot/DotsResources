@@ -50,6 +50,7 @@ namespace Biods.Movement
             _velocities.Dispose();
             _newVelocities.Dispose();
             _transforms.Dispose();
+            _entities.Dispose();
             _boids.Dispose();
         }
 
@@ -85,6 +86,7 @@ namespace Biods.Movement
             }
             
             commandBuffer.Playback(state.EntityManager);
+            commandBuffer.Dispose();
         }
 
         private void InitializeArrays(ref SystemState state, int count)
