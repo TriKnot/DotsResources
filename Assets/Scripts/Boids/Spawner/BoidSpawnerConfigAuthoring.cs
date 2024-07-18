@@ -1,6 +1,5 @@
 ﻿using Unity.Burst;
 using Unity.Entities;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace Biods.Spawner
@@ -10,7 +9,6 @@ namespace Biods.Spawner
     {
         public Entity Prefab;
         public int Count;
-        public float3 Bounds;
     }
     
     [BurstCompile]
@@ -18,7 +16,6 @@ namespace Biods.Spawner
     {
         public GameObject Prefab;
         public int Count;
-        public float3 Bounds;
 
         public class BoidSpawnerBaker : Baker<BoidSpawnerConfigAuthoring>
         {
@@ -30,7 +27,6 @@ namespace Biods.Spawner
                     {
                         Prefab = GetEntity(configAuthoring.Prefab, TransformUsageFlags.Dynamic), 
                         Count = configAuthoring.Count,
-                        Bounds = configAuthoring.Bounds
                     });
             }
         }

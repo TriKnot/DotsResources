@@ -119,25 +119,20 @@ namespace Biods.Movement
 
             return cohesion;
         }
-
+        
         private float3 KeepInBounds(float3 position, float3 velocity)
         {
             float3 steer = float3.zero;
-            float3 desired = float3.zero;
+            float3 relativePosition = position - Config.BoundsCenter;
 
-            desired.x = math.select(0, 1, position.x < -Config.Bounds.x) + math.select(0, -1, position.x > Config.Bounds.x);
-            desired.y = math.select(0, 1, position.y < -Config.Bounds.y) + math.select(0, -1, position.y > Config.Bounds.y);
-            desired.z = math.select(0, 1, position.z < -Config.Bounds.z) + math.select(0, -1, position.z > Config.Bounds.z);
-            
-            if(!math.all(desired == float3.zero))
-            {
-                desired = math.normalize(desired) * math.length(velocity);
-                steer = desired - velocity;
-            }
+            float3 bounds = Config.Bounds;
+
+            steer.x = math.select(0, -Config.MinSpeed, relativePosition.x > bounds.x) + math.select(0, Config.MinSpeed, relativePosition.x < -bounds.x);
+            steer.y = math.select(0, -Config.MinSpeed, relativePosition.y > bounds.y) + math.select(0, Config.MinSpeed, relativePosition.y < -bounds.y);
+            steer.z = math.select(0, -Config.MinSpeed, relativePosition.z > bounds.z) + math.select(0, Config.MinSpeed, relativePosition.z < -bounds.z);
 
             return velocity + steer;
         }
-        
         
         private float3 ClampVelocity(float3 velocity)
         {

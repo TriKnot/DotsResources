@@ -9,6 +9,7 @@ namespace Biods.Movement
     public struct BoidMovementConfig : IComponentData
     {
         public float3 Bounds;
+        public float3 BoundsCenter;
         
         public float SeparationRange;
         public float AlignmentRange;
@@ -25,6 +26,7 @@ namespace Biods.Movement
     public class BoidMovementConfigAuthoring : MonoBehaviour
     {
         public float3 Bounds;
+        public float3 BoundsCenter;
         
         public float SeparationRange;
         public float AlignmentRange;
@@ -36,8 +38,6 @@ namespace Biods.Movement
         
         public float MaxSpeed;
         public float MinSpeed;
-        
-        public float TurnSpeed;
 
         public class BoidMovementConfigBaker : Baker<BoidMovementConfigAuthoring>
         {
@@ -48,6 +48,7 @@ namespace Biods.Movement
                     new BoidMovementConfig
                     {
                         Bounds = authoring.Bounds,
+                        BoundsCenter = authoring.BoundsCenter,
                         
                         SeparationRange = authoring.SeparationRange,
                         AlignmentRange = authoring.AlignmentRange,
