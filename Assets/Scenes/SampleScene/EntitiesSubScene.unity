@@ -192,7 +192,7 @@ MonoBehaviour:
     z: 0
   SeparationRange: 3
   AlignmentRange: 4
-  CohesionRange: 6
+  CohesionRange: 25
   SeparationWeight: 0.5
   AlignmentWeight: 0.1
   CohesionWeight: 0.05
