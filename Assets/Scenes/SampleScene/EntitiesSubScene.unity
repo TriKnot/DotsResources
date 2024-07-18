@@ -154,11 +154,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Prefab: {fileID: 671183637770998924, guid: 59c5d6622af10ea4f9a54c25941ae491, type: 3}
-  Count: 5000
-  Bounds:
-    x: 100
-    y: 100
-    z: 100
+  Count: 10000
 --- !u!4 &1499454104
 Transform:
   m_ObjectHideFlags: 0
@@ -187,18 +183,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Bounds:
-    x: 100
-    y: 100
-    z: 100
+    x: 200
+    y: 50
+    z: 200
+  BoundsCenter:
+    x: 0
+    y: 125
+    z: 0
   SeparationRange: 3
   AlignmentRange: 4
   CohesionRange: 6
   SeparationWeight: 0.5
   AlignmentWeight: 0.1
-  CohesionWeight: 0.1
+  CohesionWeight: 0.05
   MaxSpeed: 15
   MinSpeed: 1
-  TurnSpeed: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
