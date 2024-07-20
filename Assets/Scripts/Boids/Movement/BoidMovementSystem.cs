@@ -1,19 +1,20 @@
-﻿using Biods.Spawner;
-using Unity.Burst;
+﻿using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Biods.Movement
 {
     [BurstCompile]
+    [UpdateInGroup(typeof(SimulationSystemGroup))]
     public partial struct BoidMovementSystem : ISystem
     {
         private EntityQuery _boidQuery;
         private JobHandle _jobHandle;
+        private BoidMovementConfig _config;
     
         private NativeArray<float3> _positions;
         private NativeArray<float3> _velocities;
@@ -38,12 +39,15 @@ namespace Biods.Movement
             if(count == 0)
                 return;
             
+            _config = SystemAPI.GetSingleton<BoidMovementConfig>();
+            
             InitializeArrays(ref state, count);
             ScheduleBoidSimulationJob(ref state, count);            
             UpdateComponents(ref state, count);
             DisposeArrays();
         }
-
+        
+        [BurstCompile]
         private void DisposeArrays()
         {
             _positions.Dispose();
@@ -54,22 +58,23 @@ namespace Biods.Movement
             _boids.Dispose();
         }
 
+        [BurstCompile]
         private void ScheduleBoidSimulationJob(ref SystemState state, int count)
         {
-            BoidMovementConfig config = SystemAPI.GetSingleton<BoidMovementConfig>();
-
             BoidSimulationJob job = new BoidSimulationJob
             {
                 Positions = _positions,
                 Velocities = _velocities,
                 NewVelocities = _newVelocities,
-                Config = config,
+                RandomSeed = (uint) Random.Range(0, 100000),
+                Config = _config,
             };
 
-            _jobHandle = job.ScheduleParallel(count, 128, new JobHandle());
+            _jobHandle = job.ScheduleParallel(count, 64, new JobHandle());
             _jobHandle.Complete();
         }
         
+        [BurstCompile]
         private void UpdateComponents(ref SystemState state, int count)
         {
             EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.TempJob);
@@ -89,6 +94,7 @@ namespace Biods.Movement
             commandBuffer.Dispose();
         }
 
+        [BurstCompile]
         private void InitializeArrays(ref SystemState state, int count)
         {
 

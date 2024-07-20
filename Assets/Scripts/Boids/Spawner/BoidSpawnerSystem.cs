@@ -8,6 +8,7 @@ using Unity.Transforms;
 namespace Biods.Spawner
 {
     [BurstCompile]
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
     public partial struct BoidSpawnerSystem : ISystem
     {
         public void OnCreate(ref SystemState state)

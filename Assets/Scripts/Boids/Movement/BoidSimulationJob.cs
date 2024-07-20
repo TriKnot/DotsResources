@@ -2,6 +2,7 @@
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
+using Random = Unity.Mathematics.Random;
 
 namespace Biods.Movement
 {
@@ -10,6 +11,7 @@ namespace Biods.Movement
     {
         [ReadOnly] public NativeArray<float3> Positions;
         [ReadOnly] public NativeArray<float3> Velocities;
+        [ReadOnly] public uint RandomSeed;
         
         public NativeArray<float3> NewVelocities;
         public BoidMovementConfig Config;
@@ -23,7 +25,10 @@ namespace Biods.Movement
             velocity += CalculateAlignment(index, position);
             velocity += CalculateCohesion(index, position);
             
-            velocity = KeepInBounds(position, velocity);
+            var random = new Random((uint) (RandomSeed * (index + 1)));
+            velocity += random.NextFloat3(new float3(-1,-1,-1), new float3(1,1,1)) * Config.RandomScatterWeight;
+            
+            velocity = SteerInBounds(position, velocity);
             
             velocity = ClampVelocity(velocity);
 
@@ -120,7 +125,7 @@ namespace Biods.Movement
             return cohesion;
         }
         
-        private float3 KeepInBounds(float3 position, float3 velocity)
+        private float3 SteerInBounds(float3 position, float3 velocity)
         {
             float3 steer = float3.zero;
             float3 relativePosition = position - Config.BoundsCenter;

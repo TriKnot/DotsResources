@@ -19,6 +19,8 @@ namespace Biods.Movement
         public float AlignmentWeight;
         public float CohesionWeight;
         
+        public float RandomScatterWeight;
+        
         public float MaxSpeed;
         public float MinSpeed;
     }
@@ -35,6 +37,8 @@ namespace Biods.Movement
         public float SeparationWeight;
         public float AlignmentWeight;
         public float CohesionWeight;
+        
+        public float RandomScatterWeight;
         
         public float MaxSpeed;
         public float MinSpeed;
@@ -57,6 +61,8 @@ namespace Biods.Movement
                         SeparationWeight = authoring.SeparationWeight,
                         AlignmentWeight = authoring.AlignmentWeight,
                         CohesionWeight = authoring.CohesionWeight,
+                        
+                        RandomScatterWeight = authoring.RandomScatterWeight,
                         
                         MaxSpeed = authoring.MaxSpeed,
                         MinSpeed = authoring.MinSpeed,
