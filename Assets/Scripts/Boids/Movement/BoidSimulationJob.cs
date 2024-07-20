@@ -6,8 +6,8 @@ using Random = Unity.Mathematics.Random;
 
 namespace Biods.Movement
 {
-    [BurstCompile]
-    public partial struct BoidSimulationJob : IJobFor
+    [BurstCompile(FloatPrecision.Low, FloatMode.Fast, CompileSynchronously = true)]
+    public struct BoidSimulationJob : IJobFor
     {
         [ReadOnly] public NativeArray<float3> Positions;
         [ReadOnly] public NativeArray<float3> Velocities;
@@ -15,17 +15,19 @@ namespace Biods.Movement
         
         public NativeArray<float3> NewVelocities;
         public BoidMovementConfig Config;
-
         public void Execute(int index)
         {
             float3 position = Positions[index];
             float3 velocity = Velocities[index];
-
-            velocity += CalculateSeparation(index, position);
-            velocity += CalculateAlignment(index, position);
-            velocity += CalculateCohesion(index, position);
             
-            var random = new Random((uint) (RandomSeed * (index + 1)));
+            float maxNeighborDistance = math.max(Config.SeparationRange, math.max(Config.AlignmentRange, Config.CohesionRange));
+            NativeList<int> neighbors = FindNeighbors(index, position, maxNeighborDistance);
+
+            velocity += CalculateSeparation( position, neighbors);
+            velocity += CalculateAlignment( position, neighbors);
+            velocity += CalculateCohesion( position, neighbors);
+            
+            Random random = new Random((uint) (RandomSeed * (index + 1)));
             velocity += random.NextFloat3(new float3(-1,-1,-1), new float3(1,1,1)) * Config.RandomScatterWeight;
             
             velocity = SteerInBounds(position, velocity);
@@ -33,18 +35,37 @@ namespace Biods.Movement
             velocity = ClampVelocity(velocity);
 
             NewVelocities[index] = velocity;
+            
         }
 
-        private float3 CalculateSeparation(int index, float3 position)
+        private NativeList<int> FindNeighbors(int index, float3 position, float maxNeighborDistance)
         {
-            float3 separation = float3.zero;
-            int neighborCount = 0;
+            NativeList<int> neighbors = new NativeList<int>(Allocator.Temp);
 
             for (int i = 0; i < Positions.Length; i++)
             {
                 if (i == index) continue;
 
                 float3 otherPosition = Positions[i];
+                float distance = math.distance(position, otherPosition);
+                if (distance < maxNeighborDistance)
+                {
+                    neighbors.Add(i);
+                }
+            }
+
+            return neighbors;
+        }
+
+        private float3 CalculateSeparation(float3 position, NativeList<int> neighbors)
+        {
+            float3 separation = float3.zero;
+            int neighborCount = 0;
+
+            for (int i = 0; i < neighbors.Length; i++)
+            {
+                int index = neighbors[i];
+                float3 otherPosition = Positions[index];
                 float distance = math.distance(position, otherPosition);
                 if (distance < Config.SeparationRange)
                 {
@@ -66,20 +87,19 @@ namespace Biods.Movement
             return separation;
         }
 
-        private float3 CalculateAlignment(int index, float3 position)
+        private float3 CalculateAlignment(float3 position, NativeList<int> neighbors)
         {
             float3 alignment = float3.zero;
             int neighborCount = 0;
 
-            for (int i = 0; i < Positions.Length; i++)
+            for (int i = 0; i < neighbors.Length; i++)
             {
-                if (i == index) continue;
-
-                float3 otherPosition = Positions[i];
+                int index = neighbors[i];
+                float3 otherPosition = Positions[index];
                 float distance = math.distance(position, otherPosition);
                 if (distance < Config.AlignmentRange)
                 {
-                    float3 otherVelocity = Velocities[i];
+                    float3 otherVelocity = Velocities[index];
                     
                     alignment += otherVelocity;
                     neighborCount++;
@@ -95,16 +115,15 @@ namespace Biods.Movement
             return alignment;
         }
 
-        private float3 CalculateCohesion(int index, float3 position)
+        private float3 CalculateCohesion(float3 position, NativeList<int> neighbors)
         {
             float3 cohesion = float3.zero;
             int neighborCount = 0;
 
-            for (int i = 0; i < Positions.Length; i++)
+            for (int i = 0; i < neighbors.Length; i++)
             {
-                if (i == index) continue;
-
-                float3 otherPosition = Positions[i];
+                int index = neighbors[i];
+                float3 otherPosition = Positions[index];
                 float distance = math.distance(position, otherPosition);
                 if (distance < Config.CohesionRange)
                 {
