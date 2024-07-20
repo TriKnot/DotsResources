@@ -154,7 +154,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Prefab: {fileID: 671183637770998924, guid: 59c5d6622af10ea4f9a54c25941ae491, type: 3}
-  Count: 5000
+  Count: 2000
 --- !u!4 &1499454104
 Transform:
   m_ObjectHideFlags: 0
@@ -193,7 +193,7 @@ MonoBehaviour:
   SeparationRange: 10
   AlignmentRange: 15
   CohesionRange: 30
-  SeparationWeight: 1
+  SeparationWeight: 0.5
   AlignmentWeight: 0.2
   CohesionWeight: 0.1
   RandomScatterWeight: 1

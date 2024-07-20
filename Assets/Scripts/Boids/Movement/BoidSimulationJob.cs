@@ -20,8 +20,7 @@ namespace Biods.Movement
             float3 position = Positions[index];
             float3 velocity = Velocities[index];
             
-            float maxNeighborDistance = math.max(Config.SeparationRange, math.max(Config.AlignmentRange, Config.CohesionRange));
-            NativeList<int> neighbors = FindNeighbors(index, position, maxNeighborDistance);
+            NativeList<int> neighbors = FindNeighbors(index, position, Config.MaxNeighborDistance);
 
             velocity += CalculateSeparation( position, neighbors);
             velocity += CalculateAlignment( position, neighbors);

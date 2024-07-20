@@ -14,6 +14,7 @@ namespace Biods.Movement
         public float SeparationRange;
         public float AlignmentRange;
         public float CohesionRange;
+        public float MaxNeighborDistance;
         
         public float SeparationWeight;
         public float AlignmentWeight;
@@ -57,6 +58,7 @@ namespace Biods.Movement
                         SeparationRange = authoring.SeparationRange,
                         AlignmentRange = authoring.AlignmentRange,
                         CohesionRange = authoring.CohesionRange,
+                        MaxNeighborDistance =  math.max(authoring.SeparationRange, math.max(authoring.AlignmentRange, authoring.CohesionRange)),
                         
                         SeparationWeight = authoring.SeparationWeight,
                         AlignmentWeight = authoring.AlignmentWeight,
